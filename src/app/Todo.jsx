@@ -1,47 +1,37 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Todo = () => {
   const addTextRef=useRef(null);
-  // const addRef=useRef(null);
-
-  let list={};
-  let deleteId="";
+  const [list,setList]=useState({});
 
   const listItem={
     id:"",
     value:""
   };
 
-  const ListItem = (listItem) => {
-    const id=listItem.id;
+  const ListItem = (id, value) => {
     return (
     <>
         {/* <input id={id} name= "value" type="text" value={listItem.value} /> */}
-        <p>{listItem.value}</p>
-        {/* 여기에 수정 권한 추가할거임 */}
-        <button name="delete" onClick={() => {
-          delete list[id];
-          deleteId=id;
+        <p>value</p>
+        {/* 여기에 수정 권한 추가 안할거임 */}
+        <button name="delete" onClick={(curState) => {
+          // delete list[id];
+          const {[id]:tmp, ...rest}=curState;
+          setList(rest);
         }}>삭제</button>
     </>);
   }
 
   useEffect(() => {
-    if(localStorage != null){
-      for(let i=0;i<localStorage.length;i++){
-        const key=localStorage.key(i);
-        list[key]=localStorage.getItem(key);
-      }
+    if(localStorage.getItem("list") != "{}"){
+      console.log("번지!!")
+      setList(() => JSON.parse(localStorage.getItem("list")));
     }
   },[])
   useEffect(() => {
-    if(deleteId===""){
-      localStorage.setItem(listItem.id, JSON.stringify(ListItem(listItem)));
-    }
-    else{
-      localStorage.removeItem(deleteId);
-      deleteId="";
-    }
+    console.log("업뎃!!")
+    localStorage.setItem("list",JSON.stringify(list));
   }, [list])
   
 
@@ -55,19 +45,19 @@ export const Todo = () => {
         const id=String(x);
         listItem.id=id;
         listItem.value=addTextRef.current.value;
-        list[id]=JSON.stringify(ListItem(listItem));
-        // list[id]=listItem.value;
+
+        console.log(id);
+        console.log(listItem.value);
+        setList((curState) => {
+          return {...curState, [id]:addTextRef.current.value};
+        })
         console.log(list);
         console.log(localStorage);
-        for(let i in list){
-          console.log(JSON.parse(list[i]));
-        }
       }}>추가</button>
       <ul>
-        {
-          list && Object.entries(list).map((key,value) => {
+          {list && Object.keys(list).map((key) => {
             <li key={key}>
-              {JSON.parse(value)}
+              <ListItem id={key} value={list[key]} />
             </li>
           })
         }
