@@ -5,24 +5,40 @@ export const Todo = () => {
   const addTextRef=useRef(null);
   const [list,setList]=useState({});
 
+  const Horizontal = ({children}) => (
+    <div style={{display:"flex"}}>{children}</div>
+  );
 
-  const ListItem = ({id, value}) => {
+
+  const ListItem = ({id, value, checked}) => {
     console.log(value);
     return (
     <>
-        <input type="checkbox" name="taskCompleted" />
-        <input id={id} name= "value" type="text" value={value} readOnly/>
+      <Horizontal>
+        <input id={id} type="checkbox" name="taskCompleted" 
+        checked={checked} onClick={() => {
+          setList((curState) => {
+            return {
+              ...curState,
+              [id]:[value,!checked]
+            };
+          })
+        }}/>
+        <p>{value}</p>
         <button name="delete" key={"delete"+id} 
-        class="button btnFade btnOrange"
+        className="btn lightBlue"
         onClick={() => {
-          const {[id]:_, ...rest}=list;
-          setList(rest);
+          setList((curState) => {
+            const {[id]:_, ...rest}=list;
+            return rest;
+          })
         }}>삭제</button>
+      </Horizontal>
     </>);
   }
 
   useEffect(() => {
-    if(localStorage.getItem("list") != "{}"){
+    if(localStorage.getItem("list") && localStorage.getItem("list") != "{}"){
       setList(() => JSON.parse(localStorage.getItem("list")));
     }
   },[])
@@ -34,23 +50,24 @@ export const Todo = () => {
 
   return (
     <>
-      <span>Todo</span>
+      <h1 className="title">Todo</h1>
       <br></br>
       <input type="addText" name="value" ref={addTextRef}/>
       <button name="add" 
-      class="button btnFade btnLightBlue"
+      className="btn blue"
       onClick={() => {
         const x=Date.now();
         const id=String(x);
         const value=addTextRef.current.value;
 
-        setList((curState) => {
-          return {...curState, [id]:value};
-        })
+        if(value){
+          setList((curState) => {
+            return {...curState, [id]:[value,false]};
+        })}
       }}>추가</button>
       <ul>
           {list && Object.keys(list).map((key) => (<li key={"li"+key}>
-              <ListItem id={key} value={list[key]} />
+              <ListItem id={key} value={list[key][0]} checked={list[key][1]} />
             </li>
           ))
         }
