@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import '/style.css';
 
 export const Todo = () => {
   const addTextRef=useRef(null);
@@ -9,9 +10,11 @@ export const Todo = () => {
     console.log(value);
     return (
     <>
+        <input type="checkbox" name="taskCompleted" />
         <input id={id} name= "value" type="text" value={value} readOnly/>
-        <button name="delete" key={"delete"+id} onClick={() => {
-          console.log("삭제 "+id);
+        <button name="delete" key={"delete"+id} 
+        class="button btnFade btnOrange"
+        onClick={() => {
           const {[id]:_, ...rest}=list;
           setList(rest);
         }}>삭제</button>
@@ -20,12 +23,10 @@ export const Todo = () => {
 
   useEffect(() => {
     if(localStorage.getItem("list") != "{}"){
-      console.log("번지!!")
       setList(() => JSON.parse(localStorage.getItem("list")));
     }
   },[])
   useEffect(() => {
-    console.log("업뎃!!")
     localStorage.setItem("list",JSON.stringify(list));
   }, [list])
   
@@ -34,8 +35,11 @@ export const Todo = () => {
   return (
     <>
       <span>Todo</span>
+      <br></br>
       <input type="addText" name="value" ref={addTextRef}/>
-      <button name="add" onClick={() => {
+      <button name="add" 
+      class="button btnFade btnLightBlue"
+      onClick={() => {
         const x=Date.now();
         const id=String(x);
         const value=addTextRef.current.value;
@@ -43,8 +47,6 @@ export const Todo = () => {
         setList((curState) => {
           return {...curState, [id]:value};
         })
-        console.log(list);
-        console.log(localStorage);
       }}>추가</button>
       <ul>
           {list && Object.keys(list).map((key) => (<li key={"li"+key}>
