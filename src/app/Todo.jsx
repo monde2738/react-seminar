@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import '/style.css';
 
+const Horizontal = ({children}) => (
+  <div style={{display:"flex"}}>{children}</div>
+);
+
 export const Todo = () => {
   const addTextRef=useRef(null);
   const [list,setList]=useState({});
 
-  const Horizontal = ({children}) => (
-    <div style={{display:"flex"}}>{children}</div>
-  );
 
 
   const ListItem = ({id, value, checked}) => {
-    console.log(value);
     return (
     <>
       <Horizontal>
         <input id={id} type="checkbox" name="taskCompleted" 
-        checked={checked} onClick={() => {
+        checked={checked} onChange={() => {
           setList((curState) => {
             return {
               ...curState,
